@@ -40,13 +40,22 @@ export default function App() {
         body: JSON.stringify({ message })
       });
 
-      const payload = await response.json();
+      // Read response as text first
+      const text = await response.text();
+
+      let payload;
+      try {
+        payload = JSON.parse(text);
+      } catch {
+        throw new Error("Server didn't return JSON. API route may not be deployed.");
+      }
 
       if (!response.ok) {
         throw new Error(payload.error || 'Could not explain the message.');
       }
 
       setResult(payload);
+
     } catch (requestError) {
       setError(requestError.message);
     } finally {
